@@ -1,0 +1,6 @@
+clickhouse-connect==0.7.5
+pandas==2.2.0
+prefect==2.16.8
+pymongo==4.8.0
+streamlit==1.36.0
+griffe==0.42.1

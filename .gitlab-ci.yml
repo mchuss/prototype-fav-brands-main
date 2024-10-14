@@ -1,0 +1,53 @@
+include:
+  - project: devops/pipelines
+    ref: main
+    file: /templates_for_pipelines/includes.yaml
+
+variables:
+  PROJECT_NAME: streamlit
+  APP_NAME: "prototype-fav-brands"
+  GIT_DEPTH: 1000
+  DOCKERFILE: ".deploy/Dockerfile"
+
+stages:
+  - build-base-image
+  - build
+  - deploy
+
+build-and-push-base-image:
+  stage: build-base-image
+  variables:
+    APP_NAME: python-base-image
+    DOCKERFILE: ".deploy/base-image.Dockerfile"
+  extends:
+    - .build_by_docker_cache
+  tags:
+    - k8s-runner
+  rules:
+    - changes:
+        - .deploy/base-image.Dockerfile
+        - requirements.txt
+    - if: $CI_COMMIT_TITLE =~ /^chore/
+      when: manual
+    - when: never
+
+build-and-push-image:
+  extends:
+    - .build_by_docker_cache
+  tags:
+    - k8s-runner
+  rules:
+    - if: $CI_COMMIT_TITLE =~ /^chore/
+      when: manual
+    - when: always
+
+deploy-prod:
+  stage: deploy
+  extends: .deploy_from_current_pipeline
+  variables:
+    ENVIRONMENT: prod
+    USE_SPECIAL_TAGS_FOR_DEPLOY: "streamlit_prod,prototype_fav_brands"
+  rules:
+    - when: manual
+  tags:
+    - k8s-deployer
