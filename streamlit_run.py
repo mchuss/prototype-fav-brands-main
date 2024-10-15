@@ -79,13 +79,14 @@ def backend_simulation(mobile_phone):
                         + ", ".join(map(lambda x: f"'{x}'", df_filtered["Brand"]))
                         + ")"
                     )
-                    fav_brands = load_df_galoc("list_with_brands.sql", fav_brands_mongo)
+                    fav_brands = fav_brands_mongo.to_list()
+                    # fav_brands = load_df_galoc("list_with_brands.sql", fav_brands_mongo)
 
-                    fav_brands = (
-                        fav_brands["brand_name_ax"].to_list()
-                        if not fav_brands.empty
-                        else []
-                    )
+                    # fav_brands = (
+                    #     fav_brands["brand_name_ax"].to_list()
+                    #     if not fav_brands.empty
+                    #     else []
+                    # )
 
         time.sleep(2)
         ################################################################################################################
